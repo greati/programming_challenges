@@ -18,8 +18,8 @@ int main(void) {
 
 		++num;
 
-		char tab[m + 2][n + 2];	
-		char resp[m][n];
+		char tab[102][102];	
+		char resp[102][102];
 
 		// Fill the borders
 		for (int i = 0; i < m + 2; ++i) 
