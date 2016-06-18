@@ -20,12 +20,13 @@ int main(void) {
 
 		char tab[102][102];	
 		char resp[102][102];
+		
+		for (int i = 0; i < 102; ++i)
+			for (int j = 0; j < 102; ++j) {
+				resp[i][j] = 0;
+				tab[i][j] = '.';
+			}
 
-		// Fill the borders
-		for (int i = 0; i < m + 2; ++i) 
-			tab[0][i] = tab[n + 1][i] = '.';
-		for (int i = 0; i < n + 2; ++i) 
-			tab[i][0] = tab[i][m + 1] = '.';
 		// Read tab
 		for (int i = 1; i <= m; ++i) {
 			for (int j = 1; j <= n; ++j) {
