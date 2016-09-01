@@ -11,7 +11,7 @@ int main(void) {
 	int n, d;
 
 	vector<int> graph[1001];
-	int coord[5001][2];
+	int coord[1001][2];
 
 	scanf("%d %d", &n, &d);	
 
@@ -32,18 +32,19 @@ int main(void) {
 	}
 	
 	queue<int> q;
-	int count = 0;
-
+	int count = 1;
+	vis[0] = true;
 	q.push(0);
 	while (!q.empty()) {
 		int cur = q.front();
-		vis[cur] = true;
-		count++;	
-		for (int i = 0; i < graph[cur].size(); ++i)
-			if (!vis[graph[cur][i]])
+		for (int i = 0; i < graph[cur].size(); ++i) {
+			if (!vis[graph[cur][i]]) {
+				vis[graph[cur][i]] = true;
+				count++;	
 				q.push(graph[cur][i]);
+			}
+		}
 		q.pop();
-	
 	}
 	
 	printf(count == n ? "S\n" : "N\n");
