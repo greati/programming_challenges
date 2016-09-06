@@ -5,7 +5,7 @@ using namespace std;
 int parent[1001];
 int height[1001];
 priority_queue<pair<int,pair<int,int>>, vector<pair<int,pair<int,int>>>, greater<pair<int,pair<int,int>>>> edges;
-priority_queue<int> answer;
+priority_queue<int, vector<int>, greater<int>> answer;
 int n, m;
 
 void make_set() {
@@ -52,11 +52,10 @@ int main(void) {
 		int i = 0;
 		while (i < n-1 && !edges.empty()) {
 			pair<int,pair<int,int>> p = edges.top();
-			cout << p.first << endl;
-			if (find(p.second.first) != find(p.second.second))
+			if (find(p.second.first) != find(p.second.second)) {
 				++i;
-			else
-				answer.push(p.first);	
+				join(p.second.first, p.second.second);
+			} else answer.push(p.first);	
 			edges.pop();
 		}
 		
@@ -68,7 +67,7 @@ int main(void) {
 		if (answer.empty()) printf("forest");
 		else
 			while (!answer.empty()) {
-				printf("%d ", answer.top());
+				printf(answer.size() > 1 ? "%d " : "%d", answer.top());
 				answer.pop();
 			}
 		printf("\n");
