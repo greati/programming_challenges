@@ -2,27 +2,16 @@
 
 using namespace std;
 
+int permIDGen = 1;
 map<vector<int>,int> permToId;
 map<int,int> idToW;
 map<int,int> wToId;
-map<vector<int>,int> minDists;
+map<int,int> minDists;
 vector<int> initial;
 vector<int> goal;
-map<pair<int,int>,int> edges;
 
-void print_min_dists() {
-	for (auto i = minDists.begin(); i != minDists.end(); ++i) {
-		for (int j = 0; j < 8; ++j)
-			cout << (i->first)[j];
-		cout << "-" << (i->second) <<  endl;
-	}
-}
-
-void print_edges() {
-	for (auto i = edges.begin(); i != edges.end(); ++i) {
-		cout << (i->first).first << "-" << (i->first).second << " = " << (i->second) <<  endl;
-	}
-}
+bool adjMatrix[40321][40321];
+vector<pair<int,int>> adjList[40321];
 
 void print_vec(vector<int> & last) {
 	for (int i=0; i<8; ++i)
@@ -30,36 +19,68 @@ void print_vec(vector<int> & last) {
 	cout << endl;
 }
 
+void print_adjList(){
+	for (int i = 0; i < 40321; ++i) {
+		if (adjList[i].size() > 0) {
+			for (int j = 0; j < adjList[i].size(); ++j) {
+				cout << adjList[i][j].first << "(" << adjList[i][j].second << ")" << " ";
+			}
+			cout << endl;
+		}
+	}
+}
+
 void compute_dists(vector<int> last) {
+	vector<int> newConfig(last);
+	//cout << permToId.size() << endl;
 	// Keep on the way
 	for (int i = 0; i < 3; ++i) {
-		vector<int> newConfig (last);
 		iter_swap(newConfig.begin() + i, newConfig.begin() + i + 1);
-		if ((edges.find(make_pair(permToId[last],permToId[newConfig])) == edges.end())) { 
-			edges.insert(make_pair(make_pair(permToId[last],permToId[newConfig]), idToW[last[i]] + idToW[last[i+1]]));
-			edges.insert(make_pair(make_pair(permToId[newConfig],permToId[last]), idToW[last[i]] + idToW[last[i+1]]));
+		if (permToId.find(newConfig) == permToId.end()) {
+			permToId.insert(make_pair(newConfig,permIDGen++));
+			minDists.insert(make_pair(permIDGen - 1,INT_MAX));
+			adjMatrix[permIDGen-1][permIDGen-1] = true;
+		}
+		if (!adjMatrix[permToId[last]][permToId[newConfig]]) {
+			adjMatrix[permToId[last]][permToId[newConfig]] = adjMatrix[permToId[newConfig]][permToId[last]] = true;
+			adjList[permToId[last]].push_back(make_pair(permToId[newConfig],idToW[last[i]] + idToW[last[i+1]]));
+			adjList[permToId[newConfig]].push_back(make_pair(permToId[last],idToW[last[i]] + idToW[last[i+1]]));
 			compute_dists(newConfig);
 		}
+		iter_swap(newConfig.begin() + i, newConfig.begin() + i + 1);
 	}
 	
 	for (int i = 4; i < 7; ++i) {
-		vector<int> newConfig (last);
 		iter_swap(newConfig.begin() + i, newConfig.begin() + i + 1);
-		if ((edges.find(make_pair(permToId[last],permToId[newConfig])) == edges.end())) { 
-			edges.insert(make_pair(make_pair(permToId[last],permToId[newConfig]), idToW[last[i]] + idToW[last[i+1]]));
-			edges.insert(make_pair(make_pair(permToId[newConfig],permToId[last]), idToW[last[i]] + idToW[last[i+1]]));
+		if (permToId.find(newConfig) == permToId.end()) {
+			permToId.insert(make_pair(newConfig,permIDGen++));
+			minDists.insert(make_pair(permIDGen - 1,INT_MAX));
+			adjMatrix[permIDGen-1][permIDGen-1] = true;
+		}
+		if (!adjMatrix[permToId[last]][permToId[newConfig]]) {
+			adjMatrix[permToId[last]][permToId[newConfig]] = adjMatrix[permToId[newConfig]][permToId[last]] = true;
+			adjList[permToId[last]].push_back(make_pair(permToId[newConfig],idToW[last[i]] + idToW[last[i+1]]));
+			adjList[permToId[newConfig]].push_back(make_pair(permToId[last],idToW[last[i]] + idToW[last[i+1]]));
 			compute_dists(newConfig);
 		}
+		iter_swap(newConfig.begin() + i, newConfig.begin() + i + 1);
 	}
 	
 	for (int i = 0; i < 4; ++i) {
-		vector<int> newConfig (last);
 		iter_swap(newConfig.begin() + i, newConfig.begin() + i + 4);
-		if ((edges.find(make_pair(permToId[last],permToId[newConfig])) == edges.end())) { 
-			edges.insert(make_pair(make_pair(permToId[last],permToId[newConfig]), idToW[last[i]] + idToW[last[i+4]]));
-			edges.insert(make_pair(make_pair(permToId[newConfig],permToId[last]), idToW[last[i]] + idToW[last[i+4]]));
+		if (permToId.find(newConfig) == permToId.end()) {
+			permToId.insert(make_pair(newConfig,permIDGen++));
+			minDists.insert(make_pair(permIDGen - 1,INT_MAX));
+			adjMatrix[permIDGen-1][permIDGen-1] = true;
+		}
+		if (!adjMatrix[permToId[last]][permToId[newConfig]]) {
+			adjMatrix[permToId[last]][permToId[newConfig]] = adjMatrix[permToId[newConfig]][permToId[last]] = true;
+			adjList[permToId[last]].push_back(make_pair(permToId[newConfig],idToW[last[i]] + idToW[last[i+4]]));
+			adjList[permToId[newConfig]].push_back(make_pair(permToId[last],idToW[last[i]] + idToW[last[i+4]]));
+			print_vec(newConfig);
 			//compute_dists(newConfig);
 		}
+		iter_swap(newConfig.begin() + i, newConfig.begin() + i + 4);
 	}
 }
 
@@ -78,16 +99,19 @@ int main(void) {
 		int a; scanf("%d", &a);
 		goal.push_back(wToId[a]);
 	}
-	
+
 	// Mapping all permutations 
-	vector<int> permut (initial);
+	/*vector<int> permut (initial);
 	int pId = 0;
 	do {
 		minDists.insert(make_pair(permut, INT_MAX));	
 		permToId.insert(make_pair(permut,pId++));
-	} while (next_permutation(permut.begin(), permut.end()));
-
+	} while (next_permutation(permut.begin(), permut.end()));*/
+	permToId.insert(make_pair(initial,0));
 	compute_dists(initial);
+	//print_adjList();
+	cout << permToId.size() << endl;
+	cout << permToId[goal] << endl;
 	//print_edges();
 	//cout << edges.size() << endl;
 	return 0;
