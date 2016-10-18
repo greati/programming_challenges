@@ -2,20 +2,27 @@
 
 using namespace std;
 
-map<vector<int>,int> minDists;
-map<vector<int> , vector< pair<int,vector<int>> > > adj;
-map<vector<int>,bool> vis;
+map<int,vector<int>> idToV;
+map<vector<int>, int> vToId;
+vector<pair<int,int>> adj[40321]; 
+map<int,int> minDists;
+map<int,bool> vis;
 
-priority_queue<pair<int, vector<int>>, vector< pair<int,vector<int>> >, greater<pair<int,vector<int>>>> pq;
+//map<vector<int>,int> minDists;
+//map<vector<int> , vector< pair<int,vector<int>> > > adj;
+//map<vector<int>,bool> vis;
+
+priority_queue<pair<int, int>, vector< pair<int,int> >, greater<pair<int,int>>> pq;
 
 vector<int> initial;
 vector<int> goal;
 
-void make_edge(vector<int> old, int i, int j) {
+void make_edge(int oldId, int i, int j) {
+	vector<int> old = idToV[oldId];
 	vector<int> newConf (old);
 	iter_swap(newConf.begin() + i, newConf.begin() + j);
-	pair<int, vector<int>> edge = make_pair(old[i] + old[j], newConf);
-	adj[old].push_back(edge);
+	pair<int,int> edge = make_pair(old[i] + old[j], vToId[newConf]);
+	adj[oldId].push_back(edge);
 }
 
 int main(void) {
@@ -37,14 +44,19 @@ int main(void) {
 	sort(permut.begin(), permut.end());
 	int pId = 0;
 	do {
-		minDists.insert(make_pair(permut, (1<<30)));	
+		minDists.insert(make_pair(pId, (1<<30)));	
+		vis.insert(make_pair(pId, false));
+		idToV.insert(make_pair(pId,permut)); //*
+		vToId.insert(make_pair(permut, pId++)); //*
 	} while (next_permutation(permut.begin(), permut.end()));
+
+	int idInitial = vToId[initial];
+	int idGoal = vToId[goal];
 
 	// Edges
 	for (auto it = minDists.begin(); it != minDists.end(); ++it) {
-		vector<pair<int,vector<int>>> newAdj;
-		adj.insert(make_pair(it->first, newAdj));
-		vis.insert(make_pair(it->first, false));
+		//vector<pair<int,vector<int>>> newAdj;
+		//adj.insert(make_pair(it->first, newAdj));
 		// make edges
 		make_edge(it->first, 0, 1);	
 		make_edge(it->first, 1, 2);	
@@ -58,21 +70,21 @@ int main(void) {
 		make_edge(it->first, 3, 7);	
 	}
 
-	minDists[initial] = 0;
-	pq.push(make_pair(0, initial));
+	minDists[idInitial] = 0;
+	pq.push(make_pair(0, idInitial));
 
 	// Dijkstra
-	pair<int, vector<int>> minEdge;	
+	pair<int, int> minEdge;	
 	while(!pq.empty()) {
 		minEdge = pq.top();
 		if (vis[minEdge.second]) { 
 			pq.pop();
 			continue;
 		}
-		vector<int> v = minEdge.second;
+		int v = minEdge.second;
 		int mdv = minDists[v];
 		for (auto i = 0; i < adj[v].size(); ++i) {
-			vector<int> u = adj[v][i].second;	
+			int u = adj[v][i].second;	
 			if (minDists[u] > mdv + adj[v][i].first) {
 				minDists[u] = mdv + adj[v][i].first;
 				pq.push(make_pair(minDists[u],u));
@@ -82,7 +94,7 @@ int main(void) {
 		pq.pop();	
 	}
 
-	cout << minDists[goal] << endl;
+	cout << minDists[idGoal] << endl;
 
 	return 0;
 }
