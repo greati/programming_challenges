@@ -8,14 +8,27 @@ int main(void) {
 	scanf("%d", &t);
 
 	set<int> A,B;
-	
+
+	bool vis[1001];
+
 	while (t--) {
 		int n, m;
+		int ans = 0;
+
+		scanf("%d %d",&n,&m);
+
+		for (int i = 0; i <= n; ++i)
+			vis[i] = false;
 
 		for (int i = 0; i < m; ++i) {
 			int u,v;
 			scanf("%d %d", &u, &v);
-			if (A.find(u) != A.end()) {
+			if (!vis[u] && !vis[v]) {
+				ans++;
+				vis[u] = vis[v] = true;
+			}
+						
+			/*if (A.find(u) != A.end()) {
 				B.insert(v);
 			} else if (B.find(u) != B.end()) {
 				A.insert(v);
@@ -25,18 +38,11 @@ int main(void) {
 				A.insert(u);
 			} else {
 				A.insert(u); B.insert(v);
-			}	
+			}*/	
 		}	
-		
-		for (auto it = A.begin(); it != A.end(); ++it)
-			cout << (*it) << " ";
-		cout << endl;
-		for (auto it = B.begin(); it != B.end(); ++it)
-			cout << (*it) << " ";
-		cout << endl;
-
+		cout << ans + (n-2*ans) << endl;
 		//printf("%d\n", max(A.size(), B.size()));
-		A.clear(); B.clear();
+		//A.clear(); B.clear();
 	}
 
 	return 0;
