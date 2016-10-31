@@ -39,16 +39,16 @@ Edge* path[207];
  * **/
 Point * visitedPlaces[207];
 
+int s = 205, t = 206;
+
 int flow = 0;
 
 int updateNetwork(int vertex, int minCapacity){
 	if (parent[vertex] != -1) {
 		Edge * edgeInPath = path[vertex];
 		int m = updateNetwork(parent[vertex], min(minCapacity, edgeInPath->residual));			
-		//edgeInPath->residual -= m;
 		edgeInPath->residual = 0;
 		if (edgeInPath->opposite != nullptr)
-			//((edgeInPath->opposite)->residual) += m;
 			((edgeInPath->opposite)->residual) = 1;
 		return m;
 	}
@@ -64,10 +64,10 @@ int main(void) {
 	Point bobs[101];
 	Point ralphs[101];
 
-	int s = 205, t = 206;
-
 	Point epp {1000,1000, t};
 	Edge et {epp};
+
+	Point sp {1000,1000,s};
 
 	queue<int> q;
 
@@ -85,7 +85,11 @@ int main(void) {
 			Point p {_x, _y, i};
 			bobs[i] = p;
 			Edge e {p};
+			//Edge ep{sp,0};
+			//e.opposite = &ep;
+			//ep.opposite = &e;
 			graph[s].push_back(e);
+			//graph[i].push_back(ep);
 		}	
 	
 		for (int i = 0; i < m; ++i) {
@@ -107,18 +111,17 @@ int main(void) {
 					ep.opposite = &e;
 					graph[i].push_back(e);
 					graph[n + j].push_back(ep);
-					//printf("%d:%d,%d  %d:%d,%d\n", b1.id, b1.x, b1.y, ralphs[j].id, ralphs[j].x, ralphs[j].y);
 				}
 			}
 		}
 		
-		for (int i = 0; i < n + m; ++i) {
+		/*for (int i = 0; i < n + m; ++i) {
 			cout << i << " -> ";
 			for (int j = 0; j < graph[i].size(); ++j) {
 				cout << graph[i][j].p.id << " ";	
 			}
 			cout << endl;
-		}
+		}*/
 	
 		flow = 0;
 		
@@ -133,7 +136,7 @@ int main(void) {
 				int cur = q.front();
 				for (int i = 0; i < graph[cur].size(); ++i) {
 					Edge * e = &graph[cur][i];
-					if (!vis[e->p.id] && (e->residual) > 0) {
+					if ((e->residual) == 1 && !vis[e->p.id]) {
 						q.push(e->p.id);
 						vis[e->p.id] = true;	
 						path[e->p.id] = e;
@@ -142,12 +145,10 @@ int main(void) {
 				}	
 				q.pop();
 			}			
-
 			if(vis[t]) {
 				flow += updateNetwork(t,1<<30);
 				visitedPlaces[parent[path[parent[t]]->p.id]] = &ralphs[path[parent[t] - n]->p.id];
 			}
-
 		} while (vis[t]);	
 
 		printf("%d\n", n + flow);
