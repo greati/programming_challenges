@@ -18,33 +18,36 @@ int main(void) {
 
 		test++;
 
-		set<int> adj[7];
+		vector<int> adj[7];
 		set<int> vertices;
 		int degree[7];
+		bool vis[7];
+
+		for (int i = 0; i < 7; ++i) { 
+			vis[i] = false;
+			degree[i] = 0;
+		}
 
 		int a, b;
 		for (int i = 0; i < n; ++i) {
 			cin >> a >> b;
-			if (a != b) {
-				adj[a].insert(b);
-				degree[a]++;
-				adj[b].insert(a);
-				degree[b]++;
-			} else degree[a]++;
+			adj[a].push_back(b);
+			degree[a]++;
+			adj[b].push_back(a);
+			degree[b]++;
 			vertices.insert(a);
 			vertices.insert(b);
 		}
 
-		bool vis[7];
 		queue<int> q;
 
-		for (int i = 0; i < 7; ++i) vis[i] = false;
-
+		bool connected = true;
+		
 		q.push(a);
 		vis[a] = true;
 		while (!q.empty()) {
 			int cur = q.front();
-			for (sit it = adj[cur].begin(); it != adj[cur].end(); ++it) {
+			for (vit it = adj[cur].begin(); it != adj[cur].end(); ++it) {
 				int adj = *it;
 				if (!vis[adj]) {
 					vis[adj] = true;
@@ -54,7 +57,6 @@ int main(void) {
 			q.pop();
 		}
 
-		bool connected = true;
 		for (sit i = vertices.begin(); i != vertices.end(); ++i) {
 			if (!vis[*i]) {
 				connected = false; break;
