@@ -7,15 +7,19 @@ int main(void) {
 	int M, L, N;
 	int c[1001];
 	int pd[1001][2001];
-
+	std::vector<int> boxes;
 
 	while (true) {
 		cin >> M >> L;
 		if (M == L and M == 0) break;
 
+		boxes.clear();
+		int sum_caps = 0;
 		cin >> N;
-		for (int i = 1; i <= N; ++i)
+		for (int i = 1; i <= N; ++i) {
 			cin >> c[i];
+			sum_caps += c[i];
+		}
 		
 		for (int i = 0; i <= N; ++i) 
 			pd[0][i] = 0;
@@ -32,7 +36,23 @@ int main(void) {
 			}	
 		}
 
-		std::cout << pd[M][N] << std::endl;
+		if (L >= sum_caps - pd[M][N]) {
+			int H = M;
+			for (int j = N; j >= 1; --j) {
+				if (pd[H][j] != pd[H][j-1]) {
+					boxes.push_back(j);
+					H -= c[j];
+				}
+			}
+			std::reverse(boxes.begin(), boxes.end());
+			
+			std::cout << boxes.size() << " ";
+			for (unsigned int j = 0; j < boxes.size(); ++j) {
+				std::cout << boxes[j];
+				if (j != boxes.size() - 1) std::cout << " ";
+			}
+			std::cout << std::endl;
+		} else std::cout << "Impossible to distribute" << std::endl;
 		
 	}
 
