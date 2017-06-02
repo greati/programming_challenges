@@ -31,15 +31,14 @@ int main(void) {
 		for (int i = 1; i < N; ++i) 
 			for (int j = 0; j < i; ++j) 
 				sum[i][j] = sum[i][(j + (N-1)) % N] + areas[j];
-
 		
-
+		// PD
 		for (int i = 0; i < N; ++i) {
 			for (int j = 0; j < N; ++j) {
 				if (j == i) { pd[i][j] = 0; continue;}
 				pd[i][j] = 10000000;
-				for (int k = i; k < j; ++k) {
-					pd[i][j] = std::min(pd[i][j],pd[i][k] + pd[(k+1)%N][j] + F*std::max(sum[i][k],sum[(k+1)%N][j]));
+				for (int k = i; k < j + N; ++k) {
+					pd[i][j] = std::min(pd[i][j], pd[i][k%N] + pd[(k+1)%N][j] + F*std::max(sum[i][k%N],sum[(k+1)%N][j]));
 				}
 			}
 		}
