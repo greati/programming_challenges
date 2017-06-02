@@ -32,8 +32,18 @@ int main(void) {
 			for (int j = 0; j < i; ++j) 
 				sum[i][j] = sum[i][(j + (N-1)) % N] + areas[j];
 		
+
+		for (int j = 0; j < N; ++j) {
+			pd[j][j] = 0;
+			for (int i = j-1; i >= 0; --i) {
+				pd[i][j] = 10000000;
+				for (int k = i; k < j; ++k) {
+					pd[i][j] = std::min(pd[i][j], pd[i][k%N] + pd[(k+1)%N][j] + F*std::max(sum[i][k%N],sum[(k+1)%N][j]));
+				}
+			}
+		}
 		// PD
-		for (int i = 0; i < N; ++i) {
+		/*for (int i = 0; i < N; ++i) {
 			for (int j = 0; j < N; ++j) {
 				if (j == i) { pd[i][j] = 0; continue;}
 				pd[i][j] = 10000000;
@@ -41,8 +51,14 @@ int main(void) {
 					pd[i][j] = std::min(pd[i][j], pd[i][k%N] + pd[(k+1)%N][j] + F*std::max(sum[i][k%N],sum[(k+1)%N][j]));
 				}
 			}
-		}
+		}*/
 
+		for (int i = 0; i < N; ++i) {
+			for (int j = 0; j < N; ++j) {
+				std::cout << sum[i][j] << " ";
+			}
+			std::cout << std::endl;
+		}
 		for (int i = 0; i < N; ++i) {
 			for (int j = 0; j < N; ++j) {
 				std::cout << pd[i][j] << " ";
